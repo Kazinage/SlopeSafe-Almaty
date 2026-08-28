@@ -1,0 +1,20 @@
+{
+    "project": "SlopeSafe Almaty",
+    "n_landslides": 175,
+    "model": "Gaussian Kernel Density Estimation",
+    "best_bandwidth_km": 4.0,
+    "validation": {
+        "scheme": "Repeated random 80/20 holdout",
+        "repeats": 15,
+        "capture_10_percent": 75.61904761904763,
+        "capture_20_percent": 93.52380952380953,
+        "capture_30_percent": 95.80952380952381,
+        "capture_40_percent": 97.90476190476191,
+        "lift_20": 4.676190476190475,
+        "lift_30": 3.1936507936507943,
+        "lift_40": 2.4476190476190474,
+        "mean_test_percentile": 92.10475571444047
+    },
+    "grid_resolution_m": 500,
+    "ssi_definition": "Percentile rank of KDE density within the study area"
+}
