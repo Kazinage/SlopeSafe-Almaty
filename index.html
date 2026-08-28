@@ -1,76 +1,51 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SlopeSafe Almaty</title>
-  <style>
-    html,body{height:100%;margin:0;background:#f5f7fa;font-family:Segoe UI,Arial,sans-serif;color:#263238}
-    .wrap{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box}
-    .card{background:#fff;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.12);padding:28px 34px;max-width:520px}
-    .title{font-size:26px;font-weight:750;margin-bottom:8px}
-    .sub{font-size:13px;color:#607d8b;line-height:1.45}
-    .loader{width:48px;height:48px;border:5px solid #eceff1;border-top-color:#d7191c;border-radius:50%;margin:22px auto;animation:spin .9s linear infinite}
-    .status{font-size:12px;color:#78909c}
-    @keyframes spin{to{transform:rotate(360deg)}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SlopeSafe Almaty</title>
+<style>
+html,body{height:100%;margin:0;background:#f5f7fa;font-family:Segoe UI,Arial,sans-serif;color:#263238}.wrap{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box}.card{background:#fff;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.12);padding:28px 34px;max-width:620px}.title{font-size:27px;font-weight:750;margin-bottom:8px}.sub{font-size:13px;color:#607d8b;line-height:1.45}.loader{width:48px;height:48px;border:5px solid #eceff1;border-top-color:#d7191c;border-radius:50%;margin:22px auto;animation:spin .9s linear infinite}.status{font-size:12px;color:#78909c;word-break:break-word}.err{color:#c62828}@keyframes spin{to{transform:rotate(360deg)}}
+</style>
 </head>
 <body>
-<div class="wrap">
-  <div class="card">
-    <div class="title">SlopeSafe Almaty</div>
-    <div class="sub">Загрузка интерактивной WebGIS...</div>
-    <div class="loader"></div>
-    <div id="status" class="status">Подготовка карты</div>
-  </div>
-</div>
+<div class="wrap"><div class="card"><div class="title">SlopeSafe Almaty</div><div class="sub">Загрузка интерактивной WebGIS...</div><div class="loader"></div><div id="status" class="status">Подготовка карты</div></div></div>
 <script>
-(async function(){
-  const status = document.getElementById('status');
-  const parts = [
-    'web/payload_01.txt',
-    'web/payload_02.txt',
-    'web/payload_03.txt',
-    'web/payload_04.txt',
-    'web/payload_05.txt'
-  ];
-  try {
-    status.textContent = 'Загрузка данных WebGIS';
-    const chunks = [];
-    for (const url of parts) {
-      const r = await fetch(url, {cache:'no-store'});
-      if (!r.ok) throw new Error('Не удалось загрузить '+url+' ('+r.status+')');
-      chunks.push((await r.text()).trim());
-    }
-    const b64 = chunks.join('');
-    const binary = atob(b64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i=0;i<binary.length;i++) bytes[i]=binary.charCodeAt(i);
-
-    status.textContent = 'Распаковка карты';
-    let html;
-    if ('DecompressionStream' in window) {
-      const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
-      html = await new Response(stream).text();
-    } else {
-      await new Promise((resolve,reject)=>{
-        const s=document.createElement('script');
-        s.src='https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js';
-        s.onload=resolve;
-        s.onerror=()=>reject(new Error('Браузер не поддерживает распаковку gzip'));
-        document.head.appendChild(s);
-      });
-      html = new TextDecoder('utf-8').decode(window.pako.ungzip(bytes));
-    }
-
-    status.textContent = 'Запуск SlopeSafe Almaty';
-    document.open();
-    document.write(html);
-    document.close();
-  } catch (err) {
-    console.error(err);
-    document.body.innerHTML = '<div class="wrap"><div class="card"><div class="title">SlopeSafe Almaty</div><div class="sub" style="color:#c62828"><b>Не удалось загрузить WebGIS.</b><br><br>'+String(err.message || err)+'</div></div></div>';
-  }
+(async()=>{
+const status=document.getElementById('status');
+const base='https://raw.githubusercontent.com/Kazinage/SlopeSafe-Almaty/main/web/';
+const parts=['payload_01.txt','payload_02.txt','payload_03.txt','payload_04.txt','payload_05.txt','payload_06.txt'];
+try{
+ const chunks=[];
+ for(let i=0;i<parts.length;i++){
+   status.textContent=`Загрузка карты: ${i+1}/${parts.length}`;
+   const url=base+parts[i]+'?v=2';
+   const r=await fetch(url,{cache:'no-store',mode:'cors'});
+   if(!r.ok)throw new Error(`${parts[i]}: HTTP ${r.status}`);
+   chunks.push((await r.text()).trim());
+ }
+ status.textContent='Распаковка карты...';
+ const b64=chunks.join('');
+ const binary=atob(b64);
+ const bytes=new Uint8Array(binary.length);
+ for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+ let html;
+ if('DecompressionStream' in window){
+   const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+   html=await new Response(stream).text();
+ }else{
+   await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js';s.onload=resolve;s.onerror=()=>reject(new Error('Не удалось загрузить модуль распаковки'));document.head.appendChild(s)});
+   html=new TextDecoder('utf-8').decode(window.pako.ungzip(bytes));
+ }
+ if(!html.includes('SlopeSafe Almaty'))throw new Error('Получен некорректный файл WebGIS');
+ status.textContent='Запуск SlopeSafe Almaty...';
+ document.open();document.write(html);document.close();
+}catch(err){
+ console.error(err);
+ document.querySelector('.loader')?.remove();
+ status.className='status err';
+ status.innerHTML='<b>Не удалось загрузить WebGIS.</b><br><br>'+String(err.message||err)+'<br><br>Попробуйте Ctrl+F5.';
+}
 })();
 </script>
 </body>
