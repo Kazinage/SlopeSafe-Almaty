@@ -1,0 +1,47 @@
+name: Rebuild WebGIS index
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'web/payload_*.txt'
+      - '.github/workflows/rebuild-webgis.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reconstruct final index.html
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat web/payload_01.txt web/payload_02.txt web/payload_03.txt web/payload_04.txt web/payload_05.txt web/payload_06.txt \
+            | tr -d '\r\n' \
+            | base64 --decode \
+            | gzip --decompress --stdout \
+            > index.html
+
+          echo "Reconstructed index.html size: $(wc -c < index.html) bytes"
+          grep -q "SlopeSafe Almaty" index.html
+
+      - name: Commit reconstructed WebGIS
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "index.html is already up to date"
+            exit 0
+          fi
+          git commit -m "Deploy reconstructed SlopeSafe WebGIS"
+          git push origin HEAD:main
