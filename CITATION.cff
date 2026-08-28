@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "Если вы используете SlopeSafe Almaty, укажите этот репозиторий."
+title: "SlopeSafe Almaty"
+type: software
+authors:
+  - family-names: "Saduov"
+    given-names: "Alisher"
+repository-code: "https://github.com/Kazinage/SlopeSafe-Almaty"
+url: "https://kazinage.github.io/SlopeSafe-Almaty/"
+version: "1.0.0"
+date-released: "2026-08-28"
+license: MIT
+abstract: >-
+  Интерактивная WebGIS-платформа для математического моделирования
+  пространственной оползневой подверженности и приоритизации зон
+  детального обследования Алматы и прилегающих предгорий Заилийского Алатау.
+keywords:
+  - landslide susceptibility
+  - KDE
+  - WebGIS
+  - Almaty
+  - spatial analysis
+  - geodata
