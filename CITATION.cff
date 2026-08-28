@@ -3,8 +3,7 @@ message: "Если вы используете SlopeSafe Almaty, укажите 
 title: "SlopeSafe Almaty"
 type: software
 authors:
-  - family-names: "Saduov"
-    given-names: "Alisher"
+  - family-names: "Kazinage"
 repository-code: "https://github.com/Kazinage/SlopeSafe-Almaty"
 url: "https://kazinage.github.io/SlopeSafe-Almaty/"
 version: "1.0.0"
