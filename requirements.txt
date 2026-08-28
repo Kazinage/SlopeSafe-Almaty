@@ -1,0 +1,14 @@
+geopandas
+numpy
+pandas
+scipy
+scikit-learn
+rasterio
+pyproj
+shapely
+folium
+branca
+pyshp
+osmnx
+contextily
+matplotlib
