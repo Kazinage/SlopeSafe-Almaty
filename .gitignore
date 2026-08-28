@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local environments
+.venv/
+venv/
+env/
+
+# Temporary exports
+*.tmp
+*.log
+
+# Raw source data are not redistributed
+raw_data/
+Landslides_Inventory.*
